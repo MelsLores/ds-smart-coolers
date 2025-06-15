@@ -41,6 +41,7 @@ interface CoolerData {
   max_voltage: number
   temperature: number
   calday: string
+  prioridad?: string | number // Nueva columna traída de MongoDB
 }
 
 // Componente principal del dashboard
@@ -129,9 +130,9 @@ export default function DashboardPage() {
 
   // Exportar datos filtrados a CSV
   function exportToCSV() {
-    const headers = ["ID","Cooler","Puertas","Tiempo Abierto","Compresor","Potencia","On Time","Min Volt","Max Volt","Temp","Fecha"]
+    const headers = ["ID","Cooler","Puertas","Tiempo Abierto","Compresor","Potencia","On Time","Min Volt","Max Volt","Temp","Fecha","Prioridad"]
     const rows = filtered.map(row => [
-      row._id?.toString().slice(-6), row.cooler_id, row.door_opens, row.open_time, row.compressor, row.power, row.on_time, row.min_voltage, row.max_voltage, row.temperature, row.calday
+      row._id?.toString().slice(-6), row.cooler_id, row.door_opens, row.open_time, row.compressor, row.power, row.on_time, row.min_voltage, row.max_voltage, row.temperature, row.calday, row.prioridad
     ])
     const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n")
     const blob = new Blob([csvContent], { type: "text/csv" })
@@ -157,9 +158,9 @@ export default function DashboardPage() {
     const doc = new jsPDF()
     doc.text("Reporte de Coolers", 10, 10)
     autoTable(doc, {
-      head: [["ID","Cooler","Puertas","Tiempo Abierto","Compresor","Potencia","On Time","Min Volt","Max Volt","Temp","Fecha"]],
+      head: [["ID","Cooler","Puertas","Tiempo Abierto","Compresor","Potencia","On Time","Min Volt","Max Volt","Temp","Fecha","Prioridad"]],
       body: filtered.map(row => [
-        row._id?.toString().slice(-6), row.cooler_id, row.door_opens, row.open_time, row.compressor, row.power, row.on_time, row.min_voltage, row.max_voltage, row.temperature, row.calday
+        row._id?.toString().slice(-6), row.cooler_id, row.door_opens, row.open_time, row.compressor, row.power, row.on_time, row.min_voltage, row.max_voltage, row.temperature, row.calday, row.prioridad
       ])
     })
     doc.save("coolers.pdf")
@@ -319,6 +320,7 @@ export default function DashboardPage() {
                     <TableHead onClick={() => handleSort("max_voltage")} className="cursor-pointer">Max Volt {sortBy==="max_voltage" ? (sortDir==="asc"?"▲":"▼") : null}</TableHead>
                     <TableHead onClick={() => handleSort("temperature")} className="cursor-pointer">Temp {sortBy==="temperature" ? (sortDir==="asc"?"▲":"▼") : null}</TableHead>
                     <TableHead onClick={() => handleSort("calday")} className="cursor-pointer">Fecha {sortBy==="calday" ? (sortDir==="asc"?"▲":"▼") : null}</TableHead>
+                    <TableHead onClick={() => handleSort("prioridad")} className="cursor-pointer">Prioridad {sortBy==="prioridad" ? (sortDir==="asc"?"▲":"▼") : null}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -337,6 +339,7 @@ export default function DashboardPage() {
                       <TableCell>{row.max_voltage}</TableCell>
                       <TableCell>{row.temperature}°C {row.temperature > 10 || row.temperature < 0 ? <span title="Alerta" className="text-red-500 font-bold">!</span> : null}</TableCell>
                       <TableCell>{row.calday}</TableCell>
+                      <TableCell>{row.prioridad}</TableCell>
                     </TableRow>
                   )) : (
                     <TableRow><TableCell colSpan={11} className="text-center py-4">Sin datos</TableCell></TableRow>

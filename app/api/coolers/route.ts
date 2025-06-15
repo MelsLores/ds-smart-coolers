@@ -3,7 +3,7 @@ import { MongoClient, ServerApiVersion } from 'mongodb'
 
 const uri = process.env['MONGODB_URI']
 const dbName = 'smart-coolers' // corregido el nombre de la base de datos
-const collectionName = 'data_sms'
+const collectionName = 'ordenes-mayo'
 
 const client = new MongoClient(uri!, {
   serverApi: {
